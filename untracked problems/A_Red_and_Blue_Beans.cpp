@@ -46,7 +46,18 @@ int main(){
     while(t--){
         int r,b,diff; 
         cin>>r>>b>>diff; 
-        
+        // differance = abs(r - b)
+        // reduce difference by d by taking 1 red and d+1 smaller
+        // if difference > (d+1)*r then no solution possible
+        r = min(r,b);
+        b = max(r,b); 
+        int df = b - r; 
+        if(df > (d+1)*r){
+            cout<<"Yes"<<endl; 
+        }
+        else{
+            cout<<"No"<<endl; 
+        }
     }
     return 0;
 }
