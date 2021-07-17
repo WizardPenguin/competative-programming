@@ -1,6 +1,4 @@
-// check if it's odd pallindrome or k == 0
-// this will also work if we have atlest k elements in both directions
-// so not necessarily need to be pallindrome 
+// swap adjacent elements for odd swap last element with starting again
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -39,31 +37,30 @@ double eps = 1e-12;
 #define INF 2e18
 #define fast_cin() ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
 #define all(x) (x).begin(), (x).end()
-#define sz(x) ((ll)(x).size())
+#define sz(x) ((ll)(x).size()) 
+
 int main(){
     fast_cin();
     ll t;
     cin >> t;
     while(t--){
-        int n,k; 
-        cin>>n>>k; 
-        string s; 
-        cin>>s;
-        if(k == 0) cout<<"YES"<<ln;  
-        else{
-            int i=0;
-            while(i < n/2 and s[i] == s[n - 1 - i]) i++; 
-            // if we have found atleast k elements that can be reversed
-            if(i >= k){
-                if(n&1) cout<<"YES"<<ln; 
-                // even length
-                else if(k < n/2) cout<<"YES"<<ln; 
-                else cout<<"NO"<<ln; 
-            }
-            else{
-                cout<<"NO"<<ln; 
+        int n; cin>>n; vector<int> v(n); 
+        forn(i,n) v[i] = i+1; 
+        // we need to swap adjacent elements
+        // to solve problem of odd n we make 312 then swap reamining even part
+        if(n&1){
+            v[0] = 3; 
+            v[1] = 1; 
+            v[2] = 2; 
+            for(int i=3;i<n;i+=2){
+                swap(v[i],v[i+1]);
             }
         }
+        else{
+            for(int i=0;i<n;i+=2) swap(v[i],v[i+1]);
+        }
+        forn(i,n) cout<<v[i]<<" ";
+        cout<<endl; 
     }
     return 0;
 }

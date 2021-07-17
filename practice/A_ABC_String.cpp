@@ -1,6 +1,6 @@
-// check if it's odd pallindrome or k == 0
-// this will also work if we have atlest k elements in both directions
-// so not necessarily need to be pallindrome 
+// map each variable with each type of bracket
+// if mapping gives such bracket sequence which is valid then we are good to go
+// otherwise NO
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -40,30 +40,54 @@ double eps = 1e-12;
 #define fast_cin() ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
 #define all(x) (x).begin(), (x).end()
 #define sz(x) ((ll)(x).size())
+bool check(string &s){
+    stack<char> stk; 
+    int i=0;
+    while( i < s.length()){
+        if(s[i] == '('){
+            stk.push(s[i]);
+        }
+        else if(!stk.empty() and stk.top() == '('){
+            stk.pop(); 
+        }
+        else{
+            return false; 
+        }
+        i++;
+    }
+    return stk.empty();
+}
 int main(){
     fast_cin();
     ll t;
     cin >> t;
     while(t--){
-        int n,k; 
-        cin>>n>>k; 
         string s; 
-        cin>>s;
-        if(k == 0) cout<<"YES"<<ln;  
-        else{
-            int i=0;
-            while(i < n/2 and s[i] == s[n - 1 - i]) i++; 
-            // if we have found atleast k elements that can be reversed
-            if(i >= k){
-                if(n&1) cout<<"YES"<<ln; 
-                // even length
-                else if(k < n/2) cout<<"YES"<<ln; 
-                else cout<<"NO"<<ln; 
+        cin>>s; 
+        bool found = false; 
+        forn(i,8){
+            int A = i & (1<<0);
+            int B = i&(1<<1); 
+            int C = i&(1<<2); 
+            string temp; 
+            forn(x,s.length()){
+                if(s[x] == 'A' ){
+                    temp += (A)?')':'('; 
+                }
+                else if(s[x] == 'B'){
+                    temp += (B)?')':'('; 
+                }
+                else{
+                    temp += (C)?')':'('; 
+                }
             }
-            else{
-                cout<<"NO"<<ln; 
+            if(check(temp)){
+                found = true;  
+                break; 
             }
         }
+        if(found) cout<<"YES"<<endl; 
+        else cout<<"NO"<<endl; 
     }
     return 0;
 }

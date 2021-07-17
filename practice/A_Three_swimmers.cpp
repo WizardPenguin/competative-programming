@@ -1,6 +1,3 @@
-// check if it's odd pallindrome or k == 0
-// this will also work if we have atlest k elements in both directions
-// so not necessarily need to be pallindrome 
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -45,25 +42,16 @@ int main(){
     ll t;
     cin >> t;
     while(t--){
-        int n,k; 
-        cin>>n>>k; 
-        string s; 
-        cin>>s;
-        if(k == 0) cout<<"YES"<<ln;  
-        else{
-            int i=0;
-            while(i < n/2 and s[i] == s[n - 1 - i]) i++; 
-            // if we have found atleast k elements that can be reversed
-            if(i >= k){
-                if(n&1) cout<<"YES"<<ln; 
-                // even length
-                else if(k < n/2) cout<<"YES"<<ln; 
-                else cout<<"NO"<<ln; 
-            }
-            else{
-                cout<<"NO"<<ln; 
-            }
-        }
+        double a,b,c; 
+        ll p; 
+        cin>>p>>a>>b>>c;  
+        // each are at left at time na,nb,nc;
+        // need to find nearest multiple after p 
+        ll n1 = ceil(p/a) * a; 
+        ll n2 = ceil(p/b) * b; 
+        ll n3 = ceil(p/c) * c; 
+        ll mini = min(n1,min(n2,n3)); 
+        cout<<(mini - p)<<endl; 
     }
     return 0;
 }
