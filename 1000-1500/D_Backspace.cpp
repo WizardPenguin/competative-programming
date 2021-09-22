@@ -35,31 +35,37 @@ int main()
     ll test;
     cin >> test;
     while(test--){
-        string s,t; 
-        cin>>s>>t;
-        int n = s.length();  
-        // vector<array<vector<int>,2> > pre(26);
-        // int n = s.length(); 
-        // for(int i=0;i<n;i++){
-        //     pre[s[i] - 'a'][i&1].push_back(i);
-        // }
-        // // find index of first character of t either take odd index or even index doesn't matter
-        // int prev = pre[t[0] - 'a'][0][0];
-        // for(int i=0;i<t.length();i++){
-        //     // find index
-        // }
-        int m = t.length(); 
-        int tid = 0; 
-        int prev = 0; 
-        for(int i=0;i<n and tid < m;i++){
-            if(s[i] == t[tid]){
-                int diff = i - prev; 
-                if(diff == 0 or diff&1)
-                tid++; 
+        // if we consider strings from starting we have many options for starting point
+        // after then we can have many optoins for middle elements too
+        // this might take us to O(n^2) dp
+        // if we consider string from ending 
+        // if character matches the take it else skip 2 characters since we are pressing backspace
+        // this makes our path deterministic so O(n) 
+        string s,t; cin>>s>>t;
+        if(t.length() > s.length()){
+            cout<<"NO"<<endl; 
+            continue;
+        }
+        reverse(all(s));
+        reverse(all(t));
+        int id = 0; 
+        for(int i=0;i<s.length();i++){
+            if(s[i] == t[id]){
+                id++;
+                if(id == t.length()){
+                    break;  
+                }
+            }
+            else{
+                i++; 
             }
         }
-        if(tid == m) cout<<"YES"<<endl; 
-        else cout<<"NO"<<endl; 
+        if(id == t.length()){
+            cout<<"YES"<<endl; 
+        }
+        else{
+            cout<<"NO"<<endl;
+        }
     }
     return 0;
 }
