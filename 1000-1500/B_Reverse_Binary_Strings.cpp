@@ -37,22 +37,11 @@ int main()
         cin>>n; 
         string s; 
         cin>>s; 
-        int ones,zeors; 
-        ones = zeors = 0; 
-        for(auto &i: s){
-            if(i == '0') zeors++; 
-            else ones++; 
+        int ans = 1; 
+        for(int i=0;i<n-1;i++){
+            if(s[i] == s[i+1]) ans++; 
         }
-        int ans =0; 
-        for(int i=0;i<zeors;i++){
-            if(s[i] == '1') ans++; 
-        }
-        // cout<<ans<<endl; 
-        int ans2 = 0; 
-        for(int i=0;i<ones;i++){
-            if(s[i] == '0') ans2++; 
-        }
-        cout<<min(ans,ans2)<<endl;
+        cout<<ans/2<<endl; 
     }
     return 0;
 }

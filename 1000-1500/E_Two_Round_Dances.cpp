@@ -32,21 +32,19 @@ int main()
 {
     fast_cin();
     ll test;
-    cin >> test;
+    test = 1; 
     while(test--){
-        map<char,int> ch; 
-        string maping; 
-        cin>>maping; 
-        for(ll i=0;i<maping.size();i++){
-            ch[maping[i]] = i;  
+        int n; 
+        cin>>n; 
+        ll ans = 1; 
+        for(int i=1;i<=n;i++){
+            ans *= i; 
         }
-        string s; 
-        cin>>s; 
-        ll ans = 0; 
-        for(ll i=1;i<s.length();i++){
-            ans += abs(ch[s[i]] - ch[s[i-1]]); 
-        }
-        cout<<ans<<endl; 
+        // ll ans2 = 1;
+        // for(int i=1;i<=n/2;i++){
+        //     ans2 *= i;
+        // } 
+        cout<<(2*ans)/(n*n); 
     }
     return 0;
 }

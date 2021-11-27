@@ -26,49 +26,48 @@ typedef vector<p32> vp32;
 #define fast_cin() ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL)
 #define all(x) (x).begin(), (x).end()
 #define sz(x) ((ll)(x).size())
-
-
+#define N 5003
 int main()
 {
     fast_cin();
     ll test;
     cin >> test;
     while(test--){
-        // we can check for each number fron 1..n weather they can be in solution 
-        // this gives complexity n + n/2 + n/3 .... = NlongN
-        int n; char c; 
-        cin>>n>>c; 
-        string s; 
-        cin>>s; 
-        s = " " + s; 
-        bool found = true; 
-        for(int i=1;i<=n;i++){
-            if(s[i] != c){
-                found = false; 
+        int n; 
+        cin>>n; 
+        v32 v(n);  
+        for(int i=0;i<n;i++){
+            cin>>v[i]; 
+        }
+        // assign first node as centre and add all nodes different from it directly to it 
+        // after then add remaining after any different node 
+        // only case to check when all are having same value 
+        bool found  =true; 
+        for(int i=1;i<n;i++){
+            if(v[i] != v[i-1]){
+                found =false; 
                 break; 
             }
         }
         if(found){
-            cout<<0<<endl; 
-            continue;
+            cout<<"NO"<<endl; 
         }
-        for(int i=2;i<=n;i++){
-            found = true; 
-            for(int j=i;j<=n;j+=i){
-                if(s[j] != c){
-                    found = false; 
-                    break; 
+        else{
+            cout<<"YES"<<endl; 
+            int first = v[0]; 
+            int other; 
+            for(int i=1;i<n;i++){
+                if(v[i] != first){
+                    cout<<1<<" "<<i+1<<endl; 
+                    other = i; 
                 }
             }
-            if(found){
-                cout<<1<<endl; 
-                cout<<i<<endl; 
-                goto end; 
+            for(int i=1;i<n;i++){
+                if(v[i] == first){
+                    cout<<other+1<<" "<<i+1<<endl; 
+                }
             }
         }
-        cout<<2<<endl; 
-        cout<<n-1<<" "<<n<<endl; 
-        end:;
     }
     return 0;
 }

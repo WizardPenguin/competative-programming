@@ -31,22 +31,28 @@ typedef vector<p32> vp32;
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
-    while(test--){
-        map<char,int> ch; 
-        string maping; 
-        cin>>maping; 
-        for(ll i=0;i<maping.size();i++){
-            ch[maping[i]] = i;  
-        }
-        string s; 
-        cin>>s; 
-        ll ans = 0; 
-        for(ll i=1;i<s.length();i++){
-            ans += abs(ch[s[i]] - ch[s[i-1]]); 
-        }
-        cout<<ans<<endl; 
+    int n; 
+    cin>>n; 
+    int t; 
+    cin>>t; 
+    v64 v(n); 
+    int prev = 0; 
+    for(int i=0;i<n;i++){
+        cin>>v[i]; 
+        v[i] += prev;
+        prev = v[i];  
     }
+    prev = 0;  
+    ll ans = 0; 
+    for(int i=0;i<n;i++){
+        // let i be index from where we are starting 
+        ll lb = upper_bound(v.begin() + i,v.end(),t+prev) - v.begin() - i; 
+        // cout<<lb<<" "; 
+        prev = v[i]; 
+        if(lb > (n - i)) continue; 
+        ans = max(ans,lb);
+    }
+    cout<<endl; 
+    cout<<ans<<endl; 
     return 0;
 }
