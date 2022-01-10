@@ -1,0 +1,4 @@
+Array Query :: nice dp optimisation
+
+Raman Sharma written this 
+use ctrl + d to exit cat command
