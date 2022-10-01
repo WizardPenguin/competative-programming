@@ -1,0 +1,1 @@
+{"name":"Local: N smallest substring","url":"/home/wizardpeng/Desktop/competativeProgramming/cf/ubuntu/N smallest substring.cpp","tests":[{"id":1647976900819,"input":"2\n2 3\n3 2","output":"-1\naba"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"/home/wizardpeng/Desktop/competativeProgramming/cf/ubuntu/N smallest substring.cpp","group":"local","local":true}

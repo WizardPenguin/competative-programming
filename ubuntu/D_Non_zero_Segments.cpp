@@ -51,7 +51,7 @@ void solve(){
             st.clear(); 
             // st.insert(v[i]); 
             st.insert(0); 
-            // sm = v[i]; 
+            sm = v[i]; 
         }
         st.insert(sm); 
     }

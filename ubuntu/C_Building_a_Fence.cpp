@@ -44,7 +44,7 @@ void solve(){
         }
         i++;  
     }
-    // at end we are required to attach it to base 
+    // at end we are required to attach it to base let's place it 
     v[n-1] += k; 
     if(i == n and v[n-1]>= mini and v[n-1]<= maxi){
         cout<<"YES"<<endl; 
