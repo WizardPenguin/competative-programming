@@ -79,25 +79,53 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// need finding pairs such that n%x = y%n
 void solve()
 {
-    int x, y;
-    cin >> x >> y;
-    if (x > y)
+    int n, k;
+    cin >> n >> k;
+    vvi v(n, vi(k));
+    map<vi, int> mp;
+    for (int i = 0; i < n; i += 1)
     {
-        cout << x + y << endl;
+        for (int j = 0; j < k; j += 1)
+            cin >> v[i][j];
+        mp[v[i]] = i;
     }
-    else
+    vector<int> count(n, 0);
+    for (int i = 0; i < n; i += 1)
     {
-        cout << y - y % x / 2 << endl;
+        for (int j = i + 1; j < n; j += 1)
+        {
+            vi tp(k);
+            for (int t = 0; t < k; t += 1)
+            {
+                if (v[i][t] == v[j][t])
+                    tp[t] = v[i][t];
+                else
+                    tp[t] = 3 - v[i][t] - v[j][t];
+            }
+            // now we have pairing elements for elements i,j
+            if (mp.find(tp) != mp.end())
+            {
+                count[i] += 1;
+                count[j] += 1;
+                count[mp[tp]] += 1;
+                // cout << i << " " << j << " " << mp[tp] << endl;
+            }
+        }
     }
+    long long ans = 0;
+    for (auto &elm : count)
+    {
+        long long cnt = elm / 3;
+        ans += cnt * (cnt - 1) / 2;
+    }
+    cout << ans << endl;
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

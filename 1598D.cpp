@@ -96,6 +96,8 @@ void solve()
     }
     ll ans = n * (n - 1) * (n - 2) / 6;
     // remove case when
+    // x m n m n y , then n,m pair is present in both counts of m and n
+    // remove those pairs and act accordingly i.e. countM-1 * countN-1
     for (int i = 0; i < n; i += 1)
     {
         ans -= (mpx[xx[i]] - 1ll) * (mpy[yy[i]] - 1ll);

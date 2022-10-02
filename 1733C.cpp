@@ -79,18 +79,57 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// need finding pairs such that n%x = y%n
 void solve()
 {
-    int x, y;
-    cin >> x >> y;
-    if (x > y)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
     {
-        cout << x + y << endl;
+        cin >> v[i];
+    }
+    if (n == 1)
+    {
+        cout << 0 << endl;
+        // 0 steps required
     }
     else
     {
-        cout << y - y % x / 2 << endl;
+        vector<vector<int>> parity(2);
+        for (int i = 0; i < n; i += 1)
+        {
+            auto &elm = v[i];
+            parity[elm & 1].push_back(i);
+        }
+        vector<pair<int, int>> steps;
+        if ((v[0] & 1) == (v.back() & 1))
+        {
+            // start working from end, change elements with same parity
+            for (int i = 0; i < parity[v[0] & 1].size() - 1; i += 1)
+            {
+                steps.push_back({parity[v[0] & 1][i] + 1, n});
+            }
+            for (int i = 0; i < parity[1 - (v[0] & 1)].size(); i += 1)
+            {
+                steps.push_back({1, parity[1 - (v[0] & 1)][i] + 1});
+            }
+        }
+        else
+        {
+            for (int i = 0; i < parity[1 - (v[0] & 1)].size(); i += 1)
+            {
+                steps.push_back({1, parity[1 - (v[0] & 1)][i] + 1});
+            }
+            for (int i = 1; i < parity[v[0] & 1].size(); i += 1)
+            {
+                steps.push_back({parity[v[0] & 1][i] + 1, n});
+            }
+        }
+        cout << steps.size() << endl;
+        for (auto [x, y] : steps)
+        {
+            cout << x << " " << y << endl;
+        }
     }
 }
 int main()

@@ -109,7 +109,7 @@ void solve()
                 lr = {tuples[i]};
                 auto [tl, tr, tc] = lr.front();
             }
-            else if (l < tl and r <=)
+            else if (l < tl and r <= r)
             {
                 tc -= lr.front()[2];
                 lr.front() = tuples[i];

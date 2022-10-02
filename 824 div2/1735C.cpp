@@ -79,19 +79,73 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// need finding pairs such that n%x = y%n
+class DSU
+{
+    vector<int> parent;
+
+public:
+    DSU() : parent(26, -1) {}
+    int find(int x)
+    {
+        if (parent[x] == -1)
+            return x;
+        return parent[x] = find(parent[x]);
+    }
+    bool join(int x, int y)
+    {
+        int px = find(x);
+        int py = find(y);
+        if (px == py)
+        {
+            return false;
+        }
+        parent[x] = y; // make them connected
+        return true;
+    }
+};
 void solve()
 {
-    int x, y;
-    cin >> x >> y;
-    if (x > y)
+    int n;
+    cin >> n;
+    string s, res;
+    cin >> s;
+    DSU dsu;
+    // for each element we can give other pair to connect if it has no connected edge of that kind
+    // let adding i,j they shound't be already connected
+    // i,i are considered connected
+    map<char, char> mp;
+    vi visited(26, false);
+    for (auto &ch : s)
     {
-        cout << x + y << endl;
+        if (mp.find(ch) == mp.end())
+        {
+            int toJoin = -1;
+            int other = ch - 'a';
+            for (int i = 0; i < 26; i += 1)
+            {
+                if (not visited[i] and dsu.join(i, other))
+                {
+                    visited[i] = true;
+                    toJoin = i;
+                    break;
+                }
+            }
+            if (toJoin == -1) // last cycle is valid cycle since all characters has been considered
+            {
+                for (int i = 0; i < 26; i += 1)
+                {
+                    if (not visited[i])
+                    {
+                        toJoin = i;
+                        break;
+                    }
+                }
+            }
+            mp[ch] = char(toJoin + 'a');
+        }
+        res += mp[ch];
     }
-    else
-    {
-        cout << y - y % x / 2 << endl;
-    }
+    cout << res << endl;
 }
 int main()
 {

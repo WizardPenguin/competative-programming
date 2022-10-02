@@ -1,3 +1,6 @@
+// we want' to make lexiographically smallest substring by removing some char and put increase one anywhere
+// if string is not sorted then smallest character is not increased all other's are increased till this char is smalllest
+// after then if remaining string is not sorted repeat this procedure
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -79,19 +82,49 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// need finding pairs such that n%x = y%n
-void solve()
+string recursive(string s)
 {
-    int x, y;
-    cin >> x >> y;
-    if (x > y)
+    if (not s.length())
+        return "";
+    auto tp = s;
+    sort(all(tp));
+    string res;
+    if (tp != s)
     {
-        cout << x + y << endl;
+        auto mini = *min_element(all(s));
+        // find last Id
+        int lastId = 0;
+        for (int i = 0; i < s.length(); i += 1)
+        {
+            if (s[i] == mini)
+            {
+                lastId = i;
+            }
+        }
+        res = recursive(s.substr(lastId + 1));
+        for (int i = 0; i <= lastId; i += 1)
+        {
+            if (s[i] == mini)
+            {
+                res += s[i];
+            }
+            else
+            {
+                res += min('9', char(s[i] + 1));
+            }
+        }
+        return res;
     }
     else
-    {
-        cout << y - y % x / 2 << endl;
-    }
+        return s;
+}
+void solve()
+{
+    string s;
+    cin >> s;
+    s = recursive(s);
+    sort(all(s));
+    cout << s << endl;
 }
 int main()
 {

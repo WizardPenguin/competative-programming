@@ -79,19 +79,24 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// need finding pairs such that n%x = y%n
 void solve()
 {
-    int x, y;
-    cin >> x >> y;
-    if (x > y)
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    long long cost = 0;
+    for (int i = 1; i <= s.length(); i += 1)
     {
-        cout << x + y << endl;
+        for (int j = i; j <= s.length(); j += i)
+        {
+            if (s[j - 1] == '1')
+                break;
+            if (s[j - 1] == '0')
+                cost += i, s[j - 1] = 'o';
+        }
     }
-    else
-    {
-        cout << y - y % x / 2 << endl;
-    }
+    cout << cost << endl;
 }
 int main()
 {
