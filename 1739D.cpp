@@ -79,64 +79,49 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define MOD 998244353
-vll factorials;
-vll inverse;
-ll power(ll x, ll y, int M)
-{
-    if (y == 0)
-        return 1;
-    ll p = power(x, y / 2, M) % M;
-    p = (p * p) % M;
-    return (y % 2 == 0) ? p : (x * p) % M;
-}
-ll modInverse(ll A, ll M)
-{
-    return power(A, M - 2, M);
-}
-pll recursive(int n)
-{
-    if (not n)
-    {
-        return {0, 0};
-    }
-    ll total = ((factorials[n] * inverse[n / 2]) % MOD * inverse[n / 2]) % MOD;
-    ll firstOption = ((factorials[n - 1] * inverse[n / 2 - 1]) % MOD * inverse[n / 2]) % MOD;
-    // debug(n, total, firstOption);
-    auto remaining = recursive(n - 2);
-    ll winnings = (firstOption + remaining.second) % MOD;
-    ll looses = (total - winnings - 1 + MOD) % MOD; // loosing options of other's are winning for him
-    return {winnings, looses};
-}
 void solve()
 {
-    int n;
-    cin >> n;
-    // total Cases are (n)C(n/2)
-    // we have 1 choice to make Alice win by given her largest element, (n-1)C(n/2-1) , cases
-    // 2nd option give Alice 2nd largest element and Now bob has first element and able to stay in this round
-    // Alices winning option now are Bob's Options of loosing at that state
-    auto ret = recursive(n);
-    cout << ret.first << " " << ret.second << " " << 1 << endl;
+    int n, k;
+    cin >> n >> k;
+    vi parent(n + 1);
+    vvi graph(n + 1);
+    for (int i = 1; i <= n; i += 1)
+    {
+        cin >> parent[i];
+        if (i > 1)
+            graph[parent[i]].push_back(i); // directed edge
+    }
+    // marks nodes which are attached to root node as visited only those will have change of parent node
+    vi levels(n + 1);
+    vi visitedLevels(n + 1, false);
+    vi levelCount(n + 1);
+    vi q = {1};
+    int level = 0;
+    while (not q.empty())
+    {
+        levelCount.push_back(q.size());
+        vi tp;
+        level += 1;
+        for (auto &node : q)
+        {
+            for (auto &nbr : graph[node])
+            {
+                tp.push_back(nbr);
+                levels[nbr] = level;
+            }
+        }
+        swap(q, tp);
+    }
+    /// now work by taking optimal breaking point at each step till k allows us to do that
+    while (k)
+    {
+    }
 }
 int main()
 {
     fast_cin();
     ll test;
     cin >> test;
-    ll prev = 1;
-    factorials.push_back(1);
-    for (ll i = 1; i <= 60; i += 1)
-    {
-        prev = prev * i;
-        prev %= MOD;
-        factorials.push_back(prev);
-    }
-    inverse.push_back(1);
-    for (int i = 1; i <= 60; i += 1)
-    {
-        inverse.push_back(modInverse(factorials[i], MOD));
-    }
     while (test--)
     {
         solve();
