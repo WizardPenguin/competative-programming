@@ -1,3 +1,4 @@
+// there are 8 direction each cricket can move in that direction if not already visited and other's support it
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -79,97 +80,47 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+int findMajority(int a, int b, int c)
+{
+    if (a == b)
+        return a;
+    if (b == c)
+        return b;
+    return c;
+}
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-    vi parent(n + 1);
-    vvi graph(n + 1);
-    for (int i = 2; i <= n; i += 1)
+    int n;
+    cin >> n;
+    vi v(6); // position of cricket check weather this positioning is possible or not
+    for (auto &elm : v)
+        cin >> elm;
+    int x, y;
+    cin >> x >> y;
+    int r = findMajority(v[0], v[2], v[4]);
+    int c = findMajority(v[1], v[3], v[5]);
+    if (r == 1 and c == 1 or (r == 1 and c == n) or (r == n and c == 1) or (r == n and c == n))
     {
-        cin >> parent[i];
-        graph[parent[i]].push_back(i); // directed edge
-    }
-    vi levelCount;
-    vi q = {1};
-    int level = 0;
-    while (not q.empty())
-    {
-        levelCount.push_back(q.size());
-        vi tp;
-        level += 1;
-        for (auto &node : q)
+        if (x == r or y == c)
         {
-            for (auto &nbr : graph[node])
-            {
-                tp.push_back(nbr);
-            }
-        }
-        swap(q, tp);
-    }
-    debug(levelCount);
-
-    // now work by taking optimal breaking point at each step till k allows us to do that
-    while (levelCount.size() > 2)
-    {
-        int sz = levelCount.size();
-        // now we want' to have partioning that decreases height by most and giving least cost
-        int l, r;
-        if (levelCount.size() & 1)
-        {
-            l = r = (sz + 1) / 2;
+            cout << "YES" << endl;
         }
         else
         {
-            l = sz / 2;
-            r = l + 1;
+            cout << "NO" << endl;
         }
-        bool found = false;
-        while (r < sz)
+    }
+    else
+    {
+        if (((x & 1) == (r & 1)) or ((y & 1) == (c & 1)))
         {
-            int mini = min(levelCount[l], levelCount[r]);
-            if (mini <= k)
-            {
-                k -= mini;
-                found = true;
-                break;
-            }
-            r += 1, l -= 1;
-        }
-        if (not found)
-            break;
-        int idc;
-        if (levelCount[l] <= levelCount[r])
-        {
-            idc = l;
+            cout << "YES" << endl;
         }
         else
         {
-            idc = r;
+            cout << "NO" << endl;
         }
-        debug(idc);
-        vi newv;
-        for (int i = 0; i < idc; i += 1)
-        {
-            newv.push_back(levelCount[i]);
-        }
-        // now add remaining in order from index 1
-        int id = 1;
-        for (int i = idc; i < sz; i += 1)
-        {
-            if (id >= newv.size())
-            {
-                newv.push_back(levelCount[i]);
-            }
-            else
-            {
-                newv[id] += levelCount[i];
-            }
-        }
-        swap(newv, levelCount);
-        debug(levelCount);
     }
-    cout << levelCount.size() << endl;
 }
 int main()
 {

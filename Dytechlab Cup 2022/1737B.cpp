@@ -79,97 +79,35 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+ll findAmount(ll a)
+{
+    ll left = 0;
+    ll right = 1e9 + 1;
+    ll ans = right;
+    while (left < right)
+    {
+        ll mid = (left + right) / 2;
+        if (mid * mid > a)
+        {
+            right = mid;
+        }
+        else
+        {
+            left = mid + 1; // try increasing value
+        }
+    }
+    left -= 1;
+    ll result = left * 3;
+    result -= (left * left > a);
+    result -= (left * (left + 1) > a);
+    result -= (left * (left + 2) > a);
+    return result;
+}
 void solve()
 {
-    int n, k;
-    cin >> n >> k;
-    vi parent(n + 1);
-    vvi graph(n + 1);
-    for (int i = 2; i <= n; i += 1)
-    {
-        cin >> parent[i];
-        graph[parent[i]].push_back(i); // directed edge
-    }
-    vi levelCount;
-    vi q = {1};
-    int level = 0;
-    while (not q.empty())
-    {
-        levelCount.push_back(q.size());
-        vi tp;
-        level += 1;
-        for (auto &node : q)
-        {
-            for (auto &nbr : graph[node])
-            {
-                tp.push_back(nbr);
-            }
-        }
-        swap(q, tp);
-    }
-    debug(levelCount);
-
-    // now work by taking optimal breaking point at each step till k allows us to do that
-    while (levelCount.size() > 2)
-    {
-        int sz = levelCount.size();
-        // now we want' to have partioning that decreases height by most and giving least cost
-        int l, r;
-        if (levelCount.size() & 1)
-        {
-            l = r = (sz + 1) / 2;
-        }
-        else
-        {
-            l = sz / 2;
-            r = l + 1;
-        }
-        bool found = false;
-        while (r < sz)
-        {
-            int mini = min(levelCount[l], levelCount[r]);
-            if (mini <= k)
-            {
-                k -= mini;
-                found = true;
-                break;
-            }
-            r += 1, l -= 1;
-        }
-        if (not found)
-            break;
-        int idc;
-        if (levelCount[l] <= levelCount[r])
-        {
-            idc = l;
-        }
-        else
-        {
-            idc = r;
-        }
-        debug(idc);
-        vi newv;
-        for (int i = 0; i < idc; i += 1)
-        {
-            newv.push_back(levelCount[i]);
-        }
-        // now add remaining in order from index 1
-        int id = 1;
-        for (int i = idc; i < sz; i += 1)
-        {
-            if (id >= newv.size())
-            {
-                newv.push_back(levelCount[i]);
-            }
-            else
-            {
-                newv[id] += levelCount[i];
-            }
-        }
-        swap(newv, levelCount);
-        debug(levelCount);
-    }
-    cout << levelCount.size() << endl;
+    ll a, b;
+    cin >> a >> b;
+    cout << findAmount(b) - findAmount(a - 1) << endl;
 }
 int main()
 {
