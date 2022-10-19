@@ -79,73 +79,51 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    int q;
+    cin >> q;
+    vector<int> v(n);
+    for (int i = 0; i < n; i += 1)
+        cin >> v[i];
+    ll o = 0, e = 0;
+    ll sum = 0;
+    for (auto &elm : v)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
+        sum += elm;
+        if (elm & 1)
+            o += 1;
+        else
+            e += 1;
     }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
-        {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
     while (q--)
     {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
+        ll a, b;
+        cin >> a >> b;
+        if (a == 0)
         {
-            for (int j = 0; j < N; j += 1)
+            // to all even elements
+            sum += e * b;
+            if (b & 1)
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                o = n; // everyone tranphormed to odd
+                e = 0;
             }
         }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
         else
-            cout << -1 << " " << -1 << ln;
+        {
+            sum += o * b;
+            if (b & 1)
+            { // if it's odd then all odd converted to even
+                e = n;
+                o = 0;
+            }
+        }
+        cout << sum << endl;
     }
+    // cout << sum << endl;
 }
 int main()
 {

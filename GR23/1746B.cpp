@@ -79,73 +79,42 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
+        cin >> v[i];
+    int z = 0, o = 0;
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
-        {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
-            {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
-            }
-        }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
+        if (v[i])
+            o += 1;
         else
-            cout << -1 << " " << -1 << ln;
+            z += 1;
     }
+    if (z == n or o == n)
+    {
+        cout << 0 << endl;
+        return;
+    }
+    int ans = n; // everything is being made = 0 is not possible if everything is not laready 0
+    int cz = 0, co = 0;
+    for (int i = 0; i < n; i += 1)
+    {
+        // before this index there are all 0's and after this there are all 1's
+        // d/ebug(i, cz, co, z, o);
+        if (co >= z)
+        {
+            ans = min(ans, co);
+        }
+        if (v[i])
+            co += 1, o--;
+        else
+            cz += 1, z--;
+    }
+    cout << ans << endl;
 }
 int main()
 {

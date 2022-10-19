@@ -79,73 +79,52 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    // find weather b could be sent over network
+    vvi graph(n + 1);
+    // every node is going to have atmost 2 edges
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        int val = v[i];
+        if (i - val >= 0)
         {
-            values[currentSum].first = i;
+            graph[i - val].push_back(i + 1);
         }
-        else if (values[currentSum].second == -1)
+        if (i + val + 1 <= n)
         {
-            values[currentSum].second = i;
+            graph[i].push_back(i + val + 1);
         }
     }
-    // debug(values);
-    while (q--)
+    vi q = {0};
+    vector<int> visited(n + 1, false);
+    visited[0] = true;
+    while (not q.empty())
     {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
+        vector<int> tp;
+        for (auto &node : q)
         {
-            for (int j = 0; j < N; j += 1)
+            for (auto &nbr : graph[node])
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                if (visited[nbr])
+                    continue;
+                tp.push_back(nbr);
+                visited[nbr] = true;
+                if (nbr == n)
+                    goto end;
             }
         }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
+        swap(q, tp);
     }
+    cout << "NO" << endl;
+    return;
+end:;
+    cout << "YES" << endl;
 }
 int main()
 {

@@ -79,82 +79,71 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
+    int n;
+    cin >> n;
     string s;
     cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int id = -1;
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        if (s[i] == '1')
         {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
+            id = i;
+            break;
         }
     }
-    // debug(values);
-    while (q--)
+    if (id == -1)
     {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
+        cout << 0 << endl;
+        return;
+    }
+    string tp = s.substr(id);
+    // from this index I can take anything now first first 0 after that
+    int zero = -1;
+    for (int i = 0; i < n; i += 1)
+    {
+        if (tp[i] == '0')
         {
-            for (int j = 0; j < N; j += 1)
+            zero = i;
+            break;
+        }
+    }
+    if (zero == -1)
+    {
+        cout << tp << endl;
+        return;
+    }
+    // otherwise first largest xor we can get
+    int length = tp.size() - zero;
+    string ret = tp;
+    for (int i = 0; i < zero; i += 1)
+    {
+        // take string of size
+        string res = tp.substr(0, zero);
+        for (int offset = 0; offset < length; offset += 1)
+        {
+            if (tp[zero + offset] == '1')
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                res += '1';
+            }
+            else if (tp[i + offset] == '1')
+            {
+                res += '1';
+            }
+            else
+            {
+                res += '0';
             }
         }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
+        ret = max(ret, res);
     }
+    cout << ret << endl;
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
-    while (test--)
-    {
-        solve();
-    }
+    solve();
     return 0;
 }

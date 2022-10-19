@@ -107,7 +107,7 @@ void solve()
         }
         swap(q, tp);
     }
-    debug(levelCount);
+    // debug(levelCount);
 
     // now work by taking optimal breaking point at each step till k allows us to do that
     while (levelCount.size() > 2)
@@ -147,7 +147,7 @@ void solve()
         {
             idc = r;
         }
-        debug(idc);
+        // debug(idc);
         vi newv;
         for (int i = 0; i < idc; i += 1)
         {
@@ -165,11 +165,12 @@ void solve()
             {
                 newv[id] += levelCount[i];
             }
+            id += 1;
         }
         swap(newv, levelCount);
-        debug(levelCount);
     }
-    cout << levelCount.size() << endl;
+    // debug(levelCount);
+    cout << levelCount.size() - 1 << endl;
 }
 int main()
 {

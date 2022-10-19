@@ -79,72 +79,73 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
+int count(string &a, string &b)
+{
+    int count01 = 0, count10 = 0;
+    for (int i = 0; i < a.length(); i += 1)
+    {
+        if (a[i] == '0' and b[i] == '1')
+        {
+            count01 += 1;
+        }
+        else if (a[i] == '1' and b[i] == '0')
+        {
+            count10 += 1;
+        }
+    }
+    if (count10 == count01)
+    {
+        return count10 + count01;
+    }
+    return INT_MAX - 1;
+}
+int checkId(string &a, string &b, int id)
+{
+    if (id == -1)
+        return INT_MAX - 1;
+    string tp = a;
+    for (int i = 0; i < a.length(); i += 1)
+    {
+        if (id != i)
+        {
+            tp[i] = ((tp[i] == '0') ? '1' : '0');
+        }
+    }
+    return count(tp, b);
+}
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    string a, b;
+    cin >> a >> b;
+    // if(a == b){
+    //     cout<<0<<endl;
+    //     return;
+    // }
+    int ans = count(a, b);
+    int id1 = -1, id2 = -1;
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        if (a[i] == '1' and b[i] == '1')
         {
-            values[currentSum].first = i;
+            id1 = i;
         }
-        else if (values[currentSum].second == -1)
+        else if (a[i] == '1' and b[i] == '0')
         {
-            values[currentSum].second = i;
+            id2 = i;
         }
     }
-    // debug(values);
-    while (q--)
+    ans = min(ans, checkId(a, b, id1) + 1);
+    ans = min(ans, checkId(a, b, id2) + 1);
+    // int ans = min(checkId(a, b, id1), checkId(a, b, id2));
+    if (ans != INT_MAX - 1)
     {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
-            {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
-            }
-        }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
+        cout << ans << endl;
+    }
+    else
+    {
+        cout << -1 << endl;
     }
 }
 int main()

@@ -79,72 +79,51 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    map<int, ll> a, b;
+    a[0] = b[0] = 1;
+    // we need to find weather a is smaller than b or not
+    while (n--)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        int d, k;
+        string s;
+        cin >> d >> k >> s;
+        if (d == 1)
         {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
+            for (auto &ch : s)
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                a[ch - 'a'] += k;
             }
         }
-        if (possibleValues.size())
+        else
         {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
+            for (auto &ch : s)
+            {
+                b[ch - 'a'] += k;
+            }
+        }
+        if (b.size() > 1)
+        {
+            cout << "YES" << endl;
         }
         else
-            cout << -1 << " " << -1 << ln;
+        {
+            // means both only have a's
+            if (a[0] < b[0])
+            {
+                if (a.size() == 1)
+                    cout << "YES" << endl;
+                else
+                    cout << "NO" << endl;
+            }
+            else
+            {
+                cout << "NO" << endl;
+            }
+        }
     }
 }
 int main()

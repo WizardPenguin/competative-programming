@@ -79,73 +79,31 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
+// horizontal is red and vertical is blue
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n = 8;
+    vs v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
-    }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
-    {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        bool found = true;
+        for (int j = 0; j < n; j += 1)
         {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
+            if (v[i][j] != 'R')
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                found = false;
+                break;
             }
         }
-        if (possibleValues.size())
+        if (found)
         {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
+            cout << "R" << endl;
+            return;
         }
-        else
-            cout << -1 << " " << -1 << ln;
     }
+    cout << "B" << endl;
 }
 int main()
 {

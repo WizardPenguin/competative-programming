@@ -79,73 +79,46 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    vll v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    for (int i = 1; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
+        v[i] += v[i - 1];
     }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
+    // we need to minimize length of longest subsegement
+    int ans = n;
+    for (int i = 0; i < n; i += 1)
     {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        if (v.back() % v[i] == 0)
         {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
+            // every subsegmenet should have same sum means next = 2*v[i] ... 3*v[i] ....
+            int largestSegment = i + 1;
+            int id = i;
+            int prevId = i;
+            bool found = true;
+            ll segment = 2;
+            while (id != n - 1)
             {
-                if ((i * currentSum + j) % N == rem)
+                id = lower_bound(all(v), segment * v[i]) - v.begin();
+                if (id == n or v[id] != segment * v[i])
                 {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
+                    found = false;
+                    break;
                 }
+                segment += 1;
+                largestSegment = max(largestSegment, id - prevId);
+                prevId = id;
             }
+            if (found)
+                ans = min(ans, largestSegment);
         }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
     }
+    cout << ans << endl;
 }
 int main()
 {

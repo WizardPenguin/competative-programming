@@ -79,72 +79,43 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
+int find(vector<int> &v, int i, int j)
+{
+    if (i == j)
+        return 0; // no step required
+    // left and right would be done
+    int mid = i + (j - i) / 2;
+    int ans = find(v, i, mid);
+    ans += find(v, mid + 1, j);
+    // now try merging these 2
+    vector<int> tp(v.begin() + i, v.begin() + j + 1);
+    sort(all(tp));
+    if (tp == vector<int>(v.begin() + i, v.begin() + j + 1))
+        return ans;
+    for (int offset = 0; offset < (j - i + 1) / 2; offset += 1)
+    {
+        swap(v[i + offset], v[mid + offset + 1]);
+    }
+    // debug(i, j, tp);
+    return ans + 1;
+}
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    auto tp = v;
+    int ans = find(v, 0, n - 1);
+    sort(all(tp));
+    if (tp == v)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
+        cout << ans << endl;
     }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
+    else
     {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
-        {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
-            {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
-            }
-        }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
+        cout << -1 << endl;
     }
 }
 int main()

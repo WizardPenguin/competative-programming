@@ -79,73 +79,59 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n, m;
+    cin >> n >> m;
+    vvi graph(n + 1);
+    for (int i = 0; i < m; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
+        int x, y;
+        cin >> x >> y;
+        graph[x].push_back(y);
+        graph[y].push_back(x);
     }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
+    vb validFriends(n + 1, false);
+    int f;
+    cin >> f;
+    for (int i = 0; i < f; i += 1)
     {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
-        {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
+        int val;
+        cin >> val;
+        validFriends[val] = true;
     }
-    // debug(values);
-    while (q--)
+    int k;
+    cin >> k;
+    vi friendToTakeCare;
+    for (int i = 0; i < k; i += 1)
     {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
+        int val;
+        cin >> val;
+        friendToTakeCare.push_back(val);
+    }
+    // find shortest path to each node
+    vi dist(n + 1, -1);
+    vi q = {1};
+    dist[1] = 1;
+    while (not q.empty())
+    {
+        vi tp;
+        for (auto &node : q)
         {
-            for (int j = 0; j < N; j += 1)
+            for (auto &nbr : graph[node])
             {
-                if ((i * currentSum + j) % N == rem)
-                {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
-                }
+                if (dist[nbr] != -1)
+                    continue;
+                dist[nbr] = dist[node] + 1;
+                tp.push_back(nbr);
             }
         }
-        if (possibleValues.size())
-        {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
-        }
-        else
-            cout << -1 << " " << -1 << ln;
+        swap(tp, q);
     }
+
+    // now check for each friendToTakeCare they have edge with dist = theirDist + 1
+    // this means that node is can go through this node
+    // but there might be many shortest path for a node and many peoples asking to go with him
 }
 int main()
 {

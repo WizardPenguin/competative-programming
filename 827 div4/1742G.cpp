@@ -79,73 +79,85 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-#define N 9
+// we just need prefix OR to be lexiographically largest
+// simply means we need largest set bit giving element on front
+// if we have many such numbers then compare on 2nd largest bit till we have single number
+// place it
+// then again do for other non visited bits
+// steps goes at most 32 times over all array of size N , means under time limit
+int ans = -1;
 void solve()
 {
-    string s;
-    cin >> s;
-    int w, q;
-    cin >> w >> q;
-    vector<int> prefixValues = {0};
-    vpii values(N, {-1, -1});
-    for (int i = 0; i < s.length(); i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
     {
-        prefixValues.push_back((s[i] - '0' + prefixValues.back()) % N);
+        cin >> v[i];
     }
-    // debug(prefixValues);
-    for (int i = 1; i + w - 1 < prefixValues.size(); i += 1)
+    vector<int> res;
+    vector<int> visited(n, false);
+    vector<int> bits(32, false);
+    while (true)
     {
-        int currentSum = ((prefixValues[i + w - 1] - prefixValues[i - 1] + N) % N);
-        if (values[currentSum].first == -1)
+        // first iteration is to get largest ON bit
+        vector<int> toWork;
+        int i = 0;
+        for (i = 32 - 1; i >= 0; i -= 1)
         {
-            values[currentSum].first = i;
-        }
-        else if (values[currentSum].second == -1)
-        {
-            values[currentSum].second = i;
-        }
-    }
-    // debug(values);
-    while (q--)
-    {
-        int l, r, rem;
-        cin >> l >> r >> rem;
-        int currentSum = (prefixValues[r] - prefixValues[l - 1] + N) % N; // no inverse needed since it's always 1
-        // debug(l, r, currentSum);
-        vpii possibleValues;
-        for (int i = 0; i < N; i += 1)
-        {
-            for (int j = 0; j < N; j += 1)
+            vector<int> formed;
+            if (bits[i])
+                continue;
+            for (int elm = 0; elm < n; elm += 1)
             {
-                if ((i * currentSum + j) % N == rem)
+                if (v[elm] & (1 << i))
                 {
-                    auto &x = values[i];
-                    auto &y = values[j];
-                    if (i == j)
-                    {
-                        if (x.first != -1 and x.second != -1)
-                        {
-                            possibleValues.push_back(x);
-                        }
-                    }
-                    else
-                    {
-                        if (x.first != -1 and y.first != -1)
-                        {
-                            possibleValues.push_back({x.first, y.first});
-                        }
-                    }
+                    formed.push_back(elm);
                 }
             }
+            bits[i] = true;
+            if (formed.size())
+            {
+                swap(formed, toWork);
+                break;
+            }
         }
-        if (possibleValues.size())
+        while (i >= 0)
         {
-            sort(all(possibleValues));
-            cout << possibleValues.front().first << " " << possibleValues.front().second << endl;
+            if (bits[i])
+            {
+                i--;
+                continue;
+            }
+            vector<int> newFormed;
+            for (auto &id : toWork)
+            {
+                if (v[id] & (1 << i))
+                {
+                    bits[i] = true; // we don't need this bit again sinc OR doesn't makes difference
+                    newFormed.push_back(id);
+                }
+            }
+            if (newFormed.size())
+                swap(newFormed, toWork);
+            i--;
         }
-        else
-            cout << -1 << " " << -1 << ln;
+        // now take 1 element from remaining work
+        if (not toWork.size())
+            break;
+        visited[toWork[0]] = true;
+        res.push_back(v[toWork[0]]);
     }
+    for (auto &elm : res)
+    {
+        cout << elm << " ";
+    }
+    for (int i = 0; i < n; i += 1)
+    {
+        if (not visited[i])
+            cout << v[i] << " ";
+    }
+    cout << endl;
 }
 int main()
 {
