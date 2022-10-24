@@ -79,60 +79,40 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+// we can store multiple of every number who's query is being asked
+// store it as intervals which can be broken and added
+// for each query we can start adding intervals that can work optimally
+// searching each interval is NlogN which might pass since N is decreasing logarithmically
+unordered_map<int, vpii> data;
+unordered_map<long long, int> presence; // can mark present and absence of each element by it's frequency
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int test;
+    cin >> test;
+    while (test--)
     {
-        if (a % i == 0)
+        char ch;
+        ll n;
+        cin >> ch >> n;
+        if (ch == '+')
         {
-            fa.push_back(i);
-            fa.push_back(a / i);
+            presence[n] += 1;
+        }
+        else if (ch == '-')
+        {
+            presence[n] -= 1;
+        }
+        else
+        {
+            // every query will cost number of multiples number N could have in dataset
+            // for 1 we can have N multiples makes N**2, which is costly
         }
     }
-    for (ll i = 1; i * i <= b; i += 1)
-    {
-        if (b % i == 0)
-        {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
-    }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
-    {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
-            {
-                cout << afn << " " << bsn << endl;
-                return;
-            }
-            else if (asn <= c and bfn <= d)
-            {
-                cout << asn << " " << bfn << endl;
-                return;
-            }
-        }
-    }
-    cout << -1 << " " << -1 << endl;
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

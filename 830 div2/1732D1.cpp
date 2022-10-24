@@ -79,60 +79,39 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+unordered_map<long long, int> cache;
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int test;
+    cin >> test;
+    unordered_set<long long> st;
+    while (test--)
     {
-        if (a % i == 0)
+        char ch;
+        ll n;
+        cin >> ch >> n;
+        if (ch == '+')
         {
-            fa.push_back(i);
-            fa.push_back(a / i);
+            st.insert(n);
         }
-    }
-    for (ll i = 1; i * i <= b; i += 1)
-    {
-        if (b % i == 0)
+        else
         {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
-    }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
-    {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
+            if (cache.find(n) == cache.end())
             {
-                cout << afn << " " << bsn << endl;
-                return;
+                cache[n] = 1; // first mutiple is not present
             }
-            else if (asn <= c and bfn <= d)
+            while (st.find(cache[n] * n) != st.end())
             {
-                cout << asn << " " << bfn << endl;
-                return;
+                cache[n] += 1;
             }
+            cout << cache[n] * n << endl;
         }
     }
-    cout << -1 << " " << -1 << endl;
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

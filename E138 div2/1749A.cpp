@@ -81,52 +81,30 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int n, m;
+    cin >> n >> m;
+    vector<vector<int>> board(n, vector<int>(m, 0));
+    vector<pii> data;
+    while (m--)
     {
-        if (a % i == 0)
-        {
-            fa.push_back(i);
-            fa.push_back(a / i);
-        }
+        int x, y;
+        cin >> x >> y;
+        board[x - 1][y - 1] = 1;
+        data.push_back({x - 1, y - 1});
     }
-    for (ll i = 1; i * i <= b; i += 1)
+    for (auto &[x, y] : data)
     {
-        if (b % i == 0)
+        // try to change it's position from x,y to other
+        bool found = false;
+        for (int i = 0; i < n; i += 1)
         {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
-    }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
-    {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
+            for (int j = 0; j < n; j += 1)
             {
-                cout << afn << " " << bsn << endl;
-                return;
-            }
-            else if (asn <= c and bfn <= d)
-            {
-                cout << asn << " " << bfn << endl;
-                return;
+                if (i == x and y == j)
+                    continue;
             }
         }
     }
-    cout << -1 << " " << -1 << endl;
 }
 int main()
 {

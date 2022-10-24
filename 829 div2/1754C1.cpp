@@ -81,52 +81,34 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    vpii res;
+    if (n & 1)
     {
-        if (a % i == 0)
+        cout << -1 << endl;
+        return;
+    }
+    for (int i = 0; i < n; i += 2)
+    {
+        if (v[i] == v[i + 1])
         {
-            fa.push_back(i);
-            fa.push_back(a / i);
+            res.push_back({i + 1, i + 2});
+        }
+        else
+        {
+            res.push_back({i + 1, i + 1});
+            res.push_back({i + 2, i + 2});
         }
     }
-    for (ll i = 1; i * i <= b; i += 1)
+    cout << res.size() << endl;
+    for (auto &elm : res)
     {
-        if (b % i == 0)
-        {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
+        cout << elm.first << " " << elm.second << endl;
     }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
-    {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
-            {
-                cout << afn << " " << bsn << endl;
-                return;
-            }
-            else if (asn <= c and bfn <= d)
-            {
-                cout << asn << " " << bfn << endl;
-                return;
-            }
-        }
-    }
-    cout << -1 << " " << -1 << endl;
 }
 int main()
 {

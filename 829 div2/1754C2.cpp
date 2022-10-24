@@ -81,52 +81,75 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    int count = 0;
+    for (int i = 0; i < n; i += 1)
+        cin >> v[i];
+    // just count number of zeros in between
+    int i = 0;
+    vpii res;
+    while (i < n)
     {
-        if (a % i == 0)
+        int val = v[i];
+        int startId = i + 1;
+        if (val == 0)
         {
-            fa.push_back(i);
-            fa.push_back(a / i);
+            while (i < n and v[i] == val)
+                i += 1;
+            res.push_back({startId, i});
         }
-    }
-    for (ll i = 1; i * i <= b; i += 1)
-    {
-        if (b % i == 0)
+        else
         {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
-    }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
-    {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
+            i += 1;
+            if (i == n) // there is not next element
             {
-                cout << afn << " " << bsn << endl;
+                cout << -1 << endl;
                 return;
             }
-            else if (asn <= c and bfn <= d)
+            int count = 0;
+            while (i < n and v[i] == 0) // finding first non-zero number
+                i += 1, count += 1;
+            if (i == n)
             {
-                cout << asn << " " << bfn << endl;
+                cout << -1 << endl;
                 return;
             }
+            if (count % 2 == 0)
+            {
+                // odd means next number has changed it's parity
+                if (val == v[i])
+                {
+                    res.push_back({startId, i + 1});
+                }
+                else
+                {
+                    res.push_back({startId, startId});
+                    res.push_back({startId + 1, i + 1});
+                }
+            }
+            else
+            {
+                if (val == v[i])
+                {
+                    res.push_back({startId, startId});
+                    res.push_back({startId + 1, i + 1});
+                }
+                else
+                {
+                    res.push_back({startId, i + 1});
+                }
+            }
+            i += 1;
         }
     }
-    cout << -1 << " " << -1 << endl;
+    cout << res.size() << endl;
+    for (auto &[x, y] : res)
+    {
+        cout << x << " " << y << ln;
+    }
+    // cout << endl;
 }
 int main()
 {

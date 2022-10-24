@@ -81,52 +81,70 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    // try first 30 and last 30 indices removal from full array and return result
+    // we can reduce size of our subarray only if xor += val, sum += val by same amount when it's taken
+    // 0 can be removed with any frequency, but we have constraint on non-zero numbers
+    // xor,sum has same effect only when all bits of number are added first time
+    // we can try for all 30 possibilities on left and right side , (also their combination)
+    // and work on them
+    int n, q;
+    cin >> n >> q;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
     {
-        if (a % i == 0)
-        {
-            fa.push_back(i);
-            fa.push_back(a / i);
-        }
+        cin >> v[i];
     }
-    for (ll i = 1; i * i <= b; i += 1)
+    vll sum(n, 0);
+    vi zor(n, 0);
+    sum[0] = zor[0] = v[0];
+    for (int i = 1; i < n; i += 1)
     {
-        if (b % i == 0)
-        {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
+        sum[i] = (v[i] + sum[i - 1]);
+        zor[i] = (zor[i - 1] ^ v[i]);
     }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
+    while (q--)
     {
-        for (auto &elm2 : fb)
+        int x, y;
+        cin >> x >> y; // this is range where we need to work on
+        pii res = {1, 1};
+        ll maxi = sum[0] - zor[0]; // this initialization solves probelm when we have all zeros
+        vector<int> nonZeros;
+        for (int i = 0; i < n; i += 1)
         {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
+            if (v[i])
+                nonZeros.push_back(i);
+        }
+        n = nonZeros.size();
+        for (int sid = 0, st = 0; sid < n and st < 31; sid += 1, st += 1)
+        {
+            int start = nonZeros[sid];
+            ll toRemove = ((start) ? sum[start - 1] : 0);
+            ll toRemovez = ((start) ? zor[start - 1] : 0);
+            for (int eid = n - 1, et = 0; eid >= sid and et < 32; eid -= 1, et += 1)
             {
-                cout << afn << " " << bsn << endl;
-                return;
-            }
-            else if (asn <= c and bfn <= d)
-            {
-                cout << asn << " " << bfn << endl;
-                return;
+                int end = nonZeros[eid];
+                ll currents = sum[end] - toRemove;
+                ll currentz = zor[end] ^ toRemovez;
+                // debug(currents, currentz);
+                if (maxi < currents - currentz)
+                {
+                    maxi = currents - currentz;
+                    res = {start + 1, end + 1};
+                }
+                else if (maxi == currents - currentz)
+                {
+                    // if this is of smaller size then take it
+                    int curSize = end - start + 1;
+                    int prevSize = res.second - res.first + 1;
+                    if (curSize < prevSize)
+                    {
+                        res = {start + 1, end + 1};
+                    }
+                }
             }
         }
+        cout << res.first << " " << res.second << endl;
     }
-    cout << -1 << " " << -1 << endl;
 }
 int main()
 {

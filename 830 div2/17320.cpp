@@ -81,52 +81,37 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    ll a, b, c, d;
-    cin >> a >> b >> c >> d;
-    vll fa, fb;
-    for (ll i = 1; i * i <= a; i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    int gcd = v[0];
+    for (int i = 1; i < n; i += 1)
     {
-        if (a % i == 0)
-        {
-            fa.push_back(i);
-            fa.push_back(a / i);
-        }
+        gcd = __gcd(gcd, v[i]);
     }
-    for (ll i = 1; i * i <= b; i += 1)
+    if (gcd == 1)
     {
-        if (b % i == 0)
-        {
-            fb.push_back(i);
-            fb.push_back(b / i);
-        }
+        cout << 0 << endl;
+        return;
     }
-    // debug(fa);
-    // debug(fb);
-    for (auto &elm : fa)
+    if (gcd == 1)
     {
-        for (auto &elm2 : fb)
-        {
-            // find nearest factor of fa or fb in rang a-c or b-d
-            // also their consecutive pair should have it's factor in range b-d
-            ll fn = elm2 * elm;
-            ll sn = (a * b) / fn;
-            ll afn = (a / fn + 1) * fn;
-            ll asn = (a / sn + 1) * sn;
-            ll bfn = (b / fn + 1) * fn;
-            ll bsn = (b / sn + 1) * sn;
-            if (afn <= c and bsn <= d)
-            {
-                cout << afn << " " << bsn << endl;
-                return;
-            }
-            else if (asn <= c and bfn <= d)
-            {
-                cout << asn << " " << bfn << endl;
-                return;
-            }
-        }
+        cout << 0 << endl;
     }
-    cout << -1 << " " << -1 << endl;
+    if (__gcd(__gcd(v[n - 1], n), gcd) == 1)
+    {
+        cout << 1 << endl;
+    }
+    else if (__gcd(__gcd(v[n - 2], n - 1), gcd) == 1)
+    {
+        cout << 2 << endl;
+    }
+    else
+    {
+        cout << 3 << endl;
+    }
 }
 int main()
 {
