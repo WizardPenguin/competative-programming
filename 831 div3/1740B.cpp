@@ -81,22 +81,44 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    vi a, b;
+    ll sum = 0;
+    vector<pair<int, int>> values;
+    for (int i = 0; i < n; i += 1)
     {
         int x, y;
         cin >> x >> y;
-        v.push_back({x, y});
+        a.push_back(x);
+        b.push_back(y);
+        sum += min(a[i], b[i]);
+        values.push_back({a[i], i});
+        values.push_back({b[i], i}); // try every value as maxima
     }
-    if (n == m)
+    int bound = 0;
+    for (int i = 0; i < n; i += 1)
     {
-        cout << "NO" << endl;
+        bound = max(bound, min(a[i], b[i]));
     }
-    else
+    sort(all(values), greater<pii>()); // larger value placed first
+    for (auto &[elm, id] : values)
     {
-        cout << "YES" << endl;
+        if (elm < bound)
+            break;
+        if (elm == bound)
+        {
+            // don't swap sides if other side is larger
+            // if other side is smaller it's better to be on other side so don't do anything
+            continue;
+        }
+        else
+        {
+            // we need to make updates that this side is no longer on vertical part
+            // this is shurely going to be larger of both the sides
+            sum += max(a[id], b[id]);
+            sum -= min(a[id], b[id]);
+        }
     }
 }
 int main()

@@ -79,24 +79,19 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+#define N 100005
+set<int> st;
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    if (st.find(n + 2) == st.end())
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        cout << 2 << ln;
     }
-    if (n == m)
+    else if (st.find(n + 3) == st.end())
     {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
+        cout << 3 << ln;
     }
 }
 int main()
@@ -104,6 +99,19 @@ int main()
     fast_cin();
     ll test;
     cin >> test;
+    bitset<N> b(0);
+    for (ll i = 2; i < N; i += 1)
+    {
+        if (b[i] == 0)
+        {
+            for (ll j = i * i; j < N; j += i)
+            {
+                b[j] = 1;
+            }
+            st.insert(i);
+        }
+    }
+    // // debug(primes);
     while (test--)
     {
         solve();

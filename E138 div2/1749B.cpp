@@ -81,23 +81,21 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
-    {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
-    }
-    if (n == m)
-    {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
-    }
+    int n;
+    cin >> n;
+    vll a(n), b(n);
+    ll ans = 0;
+    for (auto &elm : a)
+        cin >> elm, ans += elm;
+    for (auto &elm : b)
+        cin >> elm, ans += elm;
+    // make everyone to be used only once
+    // just largest element which is not allowed to be used to increase other's power
+    // try erasing elements from edge, only power of next element is increase that increase not tranphered
+    // means it's optimal to remove outer elements first
+    // after then try avoiding largest element get's to optimal solution
+
+    cout << ans - *max_element(all(b)) << endl;
 }
 int main()
 {

@@ -79,25 +79,45 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
+// optimal situation is to take largest possible by Alice in each move
+// and increase smallest possible by Bob to make Alice to loose is optimal
+// we can check for each value of k and return largest possible k
+bool find(vector<int> &v, int k)
+{
+    // debug(k);
+    multiset<int> st(v.begin(), v.end());
+    while (k)
+    {
+        if (st.empty())
+            return false;
+        auto ub = st.upper_bound(k);
+        if (ub == st.begin())
+            return false;
+        ub--;
+        // debug(*ub);
+        st.erase(ub);
+        if (not st.empty())
+            st.erase(st.begin()); // bob's move
+        k--;
+    }
+    return true;
+}
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
+        cin >> v[i];
+    int largest = 0;
+    for (int k = 1; k <= n; k += 1)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        if (find(v, k))
+        {
+            largest = k;
+        }
     }
-    if (n == m)
-    {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
-    }
+    cout << largest << endl;
 }
 int main()
 {

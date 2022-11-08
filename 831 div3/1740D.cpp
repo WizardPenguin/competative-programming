@@ -81,22 +81,43 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    ll n, m, k;
+    cin >> n >> m >> k;
+    vi v(k);
+    for (auto &elm : v)
+        cin >> elm;
+    // insert from ending should be done means first k,k-1,......1
+    priority_queue<int> remaining; // store larger on top
+    ll window = n * m - 3;
+    // debug(window);
+    int need = k;
+    int i = 0;
+    while (i < k and remaining.size() <= window)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        int elm = v[i];
+        if (need == elm)
+        {
+            // we have inserted this element successfully now remove from set
+            need--;
+            while (not remaining.empty() and remaining.top() == need)
+            {
+                need--;
+                remaining.pop();
+            }
+        }
+        else
+        {
+            remaining.push(elm);
+        }
+        i++;
     }
-    if (n == m)
+    if (i == k and remaining.size() <= window)
     {
-        cout << "NO" << endl;
+        cout << "YA" << endl;
     }
     else
     {
-        cout << "YES" << endl;
+        cout << "TIDAK" << endl;
     }
 }
 int main()

@@ -81,22 +81,19 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    ;
+    vi v(n);
+    for (auto &elm : v)
+        cin >> elm;
+    if (v[0] == 1)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
-    }
-    if (n == m)
-    {
-        cout << "NO" << endl;
+        cout << "Yes" << endl;
     }
     else
     {
-        cout << "YES" << endl;
+        cout << "No" << endl;
     }
 }
 int main()

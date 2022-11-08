@@ -81,22 +81,23 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    int ocount = 0;
+    for (int i = 0; i < n; i += 1)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        int elm;
+        cin >> elm;
+        ocount += elm;
     }
-    if (n == m)
+    int ecount = n - ocount;
+    if (ocount & 1)
     {
-        cout << "NO" << endl;
+        cout << "Alice" << endl;
     }
     else
     {
-        cout << "YES" << endl;
+        cout << "Bob" << endl;
     }
 }
 int main()

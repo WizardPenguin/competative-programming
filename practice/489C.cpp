@@ -81,29 +81,79 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int m, s;
+    cin >> m >> s;
+    // we need length m
+    if (s == 0)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
-    }
-    if (n == m)
-    {
-        cout << "NO" << endl;
+        if (m == 1)
+        {
+            cout << "0 0" << endl;
+        }
+        else
+        {
+            cout << "-1 -1" << endl;
+        }
     }
     else
     {
-        cout << "YES" << endl;
+        int minLength = (s + 8) / 9;
+        // debug(minLength);
+        if (m < minLength)
+        {
+            cout << "-1 -1" << endl;
+            return;
+        }
+        // try forming largest number
+        vi largest, smallest;
+        auto tp = s;
+        while (s)
+        {
+            largest.push_back(min(s, 9));
+            s -= min(s, 9);
+        }
+        while (largest.size() < m)
+        {
+            largest.push_back(0);
+        }
+
+        // try to form smallest number
+        // add 1 till we have goodness w.r.t length
+        s = tp;
+        if (m == minLength)
+        {
+            smallest = largest;
+            reverse(all(smallest));
+        }
+        else
+        {
+            smallest.push_back(1);
+            s -= 1;
+            while ((m - smallest.size()) > (s + 8) / 9) // required length should be > remaining
+            {
+                smallest.push_back(0);
+            }
+            if (s % 9)
+                smallest.push_back(s % 9);
+            while (s >= 9)
+            {
+                smallest.push_back(9);
+                s -= 9;
+            }
+        }
+        // now print both
+        for (auto &ch : smallest)
+            cout << ch;
+        cout << " ";
+        for (auto &ch : largest)
+            cout << ch;
+        cout << " ";
     }
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

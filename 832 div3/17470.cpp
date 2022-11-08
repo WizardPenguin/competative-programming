@@ -81,23 +81,21 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    vi v(n);
+    for (int i = 0; i < n; i += 1)
+        cin >> v[i];
+    ll nsum = 0;
+    ll psum = 0;
+    for (auto &elm : v)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        if (elm >= 0)
+            psum += elm;
+        else
+            nsum -= elm;
     }
-    if (n == m)
-    {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
-    }
+    cout << abs(nsum - psum) << endl;
 }
 int main()
 {

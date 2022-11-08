@@ -81,23 +81,30 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+    int i = 0;
+    long long ones = 0;
+    long long ans = 0;
+    while (i < n)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        char ch = s[i];
+        long long count = 0;
+        while (i < n and s[i] == ch)
+        {
+            count += 1;
+            i += 1;
+        }
+        ans = max(ans, count * count);
+        if (ch == '1')
+        {
+            ones += count;
+        }
     }
-    if (n == m)
-    {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
-    }
+    ans = max(ans, (n - ones) * ones);
+    cout << ans << endl;
 }
 int main()
 {

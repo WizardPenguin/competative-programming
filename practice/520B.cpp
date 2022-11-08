@@ -81,29 +81,48 @@ void _print(T t, V... v)
 #endif
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
-    vpii v(m);
-    for (int i = 0; i < m; i += 1)
+    // try to reach using bfs that might give smallest steps required to reach to some node
+    // we are at max going to reach 2*required if number goes beyond that stop bfs from there onwards
+    int m, n;
+    cin >> m >> n;
+    if (m > n)
     {
-        int x, y;
-        cin >> x >> y;
-        v.push_back({x, y});
+        cout << m - n << endl;
+        return;
     }
-    if (n == m)
+    int steps = 0;
+    vector<int> queue = {m};
+    vector<int> visited(2 * n, false);
+    visited[m] = true;
+    while (true)
     {
-        cout << "NO" << endl;
-    }
-    else
-    {
-        cout << "YES" << endl;
+        vi tp;
+        for (auto &elm : queue)
+        {
+            if (elm == n)
+            {
+                cout << steps << endl;
+                return;
+            }
+            if (elm < n and not visited[2 * elm])
+            {
+                visited[2 * elm] = true;
+                tp.push_back(2 * elm);
+            }
+            if (elm - 1 and not visited[elm - 1])
+            {
+                visited[elm - 1] = true;
+                tp.push_back(elm - 1);
+            }
+        }
+        swap(tp, queue);
+        steps += 1;
     }
 }
 int main()
 {
     fast_cin();
-    ll test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();
