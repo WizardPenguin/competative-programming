@@ -1,3 +1,7 @@
+// we know n*n has odd divisors other all have even divisors
+// now we need to find how many pairs are causing xor = n*n form
+// for that we can try bruteforcing
+
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -79,76 +83,52 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+int bitCount(int n)
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
+    int count = 0;
+    while (n)
     {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
+        count += 1;
+        n >>= 1;
     }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
-    {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
-    }
-    debug(ans, zeroId, endingId);
-    return ans;
+    return count;
 }
 void solve()
 {
-    int n;
+    long long n;
     cin >> n;
-    vector<int> v(n);
+    vi v(n);
     for (auto &elm : v)
         cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
+    int ncnt = bitCount(n);
+    vector<long long> sq;
+    sq.push_back(0);
+    for (long long i = 1; i * i < (1 << ncnt); i += 1)
     {
-        if (v[i] == 0)
+        sq.push_back(i * i);
+    }
+    // debug(sq);
+    // now find invalid pairs
+    vector<int> count((1 << ncnt), 0);
+    count[0] = 1;
+    int curXor = 0;
+    long long ans = n * (n + 1) / 2;
+    // cout << ans << endl;
+    for (int i = 0; i < n; i += 1)
+    {
+        curXor ^= v[i];
+        for (auto &elm : sq)
         {
-            zeroId.push_back(i);
+            ans -= count[elm xor curXor];
         }
-    }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
-    {
-        prev += v[i];
-        ans += (prev == 0);
-    }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
-    {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
+        count[curXor] += 1;
     }
     cout << ans << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
+    ll test;
     cin >> test;
     while (test--)
     {

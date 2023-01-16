@@ -79,76 +79,34 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+#define MOD 1000000007
+#define INV 166666668
+int sum(long long n)
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
-    {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
-    }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
-    {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
-    }
-    debug(ans, zeroId, endingId);
-    return ans;
+    return ((n * (n + 1)) % MOD * 3) % MOD;
+}
+int sumSquares(long long n)
+{
+    return (((n * (n + 1)) % MOD * (2 * n + 1)) % MOD * 2) % MOD;
+}
+int square(long long n)
+{
+    return (n * n * 6) % MOD;
 }
 void solve()
 {
     int n;
     cin >> n;
-    vector<int> v(n);
-    for (auto &elm : v)
-        cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
-    {
-        if (v[i] == 0)
-        {
-            zeroId.push_back(i);
-        }
-    }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
-    {
-        prev += v[i];
-        ans += (prev == 0);
-    }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
-    {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
-    }
-    cout << ans << endl;
+    ll a = sum(n - 1);
+    ll b = sumSquares(n - 1);
+    // cout << a << " " << b << endl;
+    ll c = square(n);
+    cout << ((a + b + c) % MOD * INV) % MOD * 2022 % MOD << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
+    ll test;
     cin >> test;
     while (test--)
     {

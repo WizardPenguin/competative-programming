@@ -1,3 +1,7 @@
+// for each element = -1
+// it's all childs should have same value
+// if that values == -1 then they don't contribute to sum
+// otherwise we can decide value for root of subtree in a deterministic way
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -79,77 +83,81 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+vvi tree;
+vi weights;
+bool found = true;
+int recursive1(int node, int parentSum, int prefixSum = 0)
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
+    if (parentSum == -1)
     {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
+        // means we already have value for this node which is prefix sum pass it to child
+        for (auto &child : tree[node])
+        {
+            recursive1(child, 0, weights[node]);
+        }
     }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
+    else
     {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
+        // we need to compute prefix sum for this node, for that first find child's prefix sum
+        if (tree[node].size() == 0)
+        {
+            // means no child so prefix sum = same as parent's prefix sum
+            return weights[node] = prefixSum;
+        }
+        weights[node] = weights[tree[node].back()];
+        for (auto &child : tree[node])
+        {
+            if (weights[child] != weights[node])
+                found = false;
+        }
+        weights[node] = prefixSum + weights[node] - prefixSum;
+        for (auto &child : tree[node])
+        {
+            recursive1(child, -1, weights[node]);
+        }
     }
-    debug(ans, zeroId, endingId);
-    return ans;
+    return weights[node];
+}
+vi newWeights;
+void recursive2(int node, int parentSum)
+{
+    newWeights[node] = weights[node] - parentSum;
+    if (newWeights[node] < 0)
+        found = false;
+    for (auto &child : tree[node])
+    {
+        recursive2(child, weights[node]);
+    }
 }
 void solve()
 {
     int n;
     cin >> n;
-    vector<int> v(n);
-    for (auto &elm : v)
-        cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
+    int par;
+    tree = vvi(n);
+    weights = vi(n);
+    newWeights = vi(n);
+    for (int i = 1; i < n; i += 1)
     {
-        if (v[i] == 0)
-        {
-            zeroId.push_back(i);
-        }
+        cin >> par;
+        tree[par - 1].push_back(i);
     }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
+
+    for (int i = 0; i < n; i += 1)
+        cin >> weights[i];
+    recursive1(0, -1);
+    recursive2(0, 0);
+    if (not found)
     {
-        prev += v[i];
-        ans += (prev == 0);
+        cout << -1 << endl;
+        return;
     }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
-    {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
-    }
-    cout << ans << endl;
+    cout << accumulate(all(newWeights), 0) << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

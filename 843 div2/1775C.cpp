@@ -79,76 +79,50 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
-{
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
-    {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
-    }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
-    {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
-    }
-    debug(ans, zeroId, endingId);
-    return ans;
-}
+#define N 65
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> v(n);
-    for (auto &elm : v)
-        cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
+    ll a, b;
+    cin >> a >> b;
+    auto ba = bitset<N>(a).to_string();
+    auto bb = bitset<N>(b).to_string();
+    int i = 0;
+    while (i < N and bb[i] == ba[i])
+        i += 1;
+    if (i == N)
     {
-        if (v[i] == 0)
+        cout << a << endl;
+        return;
+    }
+    int id = i;
+    bool found = false;
+    for (i; i < N; i += 1)
+    {
+        if (bb[i] == '1')
         {
-            zeroId.push_back(i);
+            found = true;
+            break;
         }
     }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
+    if (found or (ba[id - 1] == '1')) // this can't be possible;
     {
-        prev += v[i];
-        ans += (prev == 0);
+        cout << -1 << endl;
+        return;
     }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
+    // otherwise we need to have largest bit which is differing
+    ll remaining = 0;
+    for (i = id; i < N; i += 1)
     {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
+        if (ba[i] == '1')
+            remaining += (1ll << (N - i - 1));
     }
-    cout << ans << endl;
+    // cout << (1ll << (N - id - 1)) << endl;
+    cout << a + ((1ll << (N - id)) - remaining) << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
+    ll test;
     cin >> test;
     while (test--)
     {

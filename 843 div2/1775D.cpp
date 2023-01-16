@@ -79,77 +79,121 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+// C++ program to find prime factorization of a
+// number n in O(Log n) time with precomputation
+// allowed.
+#include "bits/stdc++.h"
+using namespace std;
+
+const int MAXN = 5e5 + 5;
+int spf[MAXN];
+void sieve()
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
+    spf[1] = 1;
+    for (int i = 2; i < MAXN; i++)
+        spf[i] = i;
+
+    for (int i = 4; i < MAXN; i += 2)
+        spf[i] = 2;
+
+    for (long long i = 3; i * i < MAXN; i++)
     {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
+        if (spf[i] == i)
+        {
+            for (long long j = i * i; j < MAXN; j += i)
+                if (spf[j] == j)
+                    spf[j] = i;
+        }
     }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
+}
+vector<int> getFactorization(int x)
+{
+    vector<int> ret;
+    while (x != 1)
     {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
+        ret.push_back(spf[x]);
+        x = x / spf[x];
     }
-    debug(ans, zeroId, endingId);
-    return ans;
+    return ret;
 }
 void solve()
 {
     int n;
     cin >> n;
     vector<int> v(n);
-    for (auto &elm : v)
-        cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
+    vector<int> visited(n, false);
+    vector<int> parent(n, -1);
+    vector<set<int>> pm(MAXN);
+    vector<vector<int>> f(MAXN);
+    sieve();
     for (int i = 0; i < v.size(); i += 1)
     {
-        if (v[i] == 0)
+        cin >> v[i];
+        vector<int> factors;
+        if (f[v[i]].size())
+            factors = f[v[i]];
+        else
+            factors = f[v[i]] = getFactorization(v[i]);
+        for (auto &elm : factors)
         {
-            zeroId.push_back(i);
+            pm[elm].insert(i);
         }
     }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
+    int a, b;
+    cin >> a >> b;
+    a--, b--;
+    visited[a] = true;
+    vector<int> q = {a};
+    auto remove = [&](int node)
     {
-        prev += v[i];
-        ans += (prev == 0);
-    }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
+        auto &factors = f[v[node]];
+        for (auto &fact : factors)
+        {
+            pm[fact].erase(node);
+        }
+    };
+    remove(a);
+    while (not q.empty())
     {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
+        vector<int> tq;
+        for (auto &id : q)
+        {
+            auto &factors = f[v[id]];
+            for (auto &elm : factors)
+            {
+                for (auto &other : pm[elm])
+                {
+                    tq.push_back(other);
+                    parent[other] = id;
+                    visited[other] = true;
+                }
+                set<int> tp = pm[elm]; // each element is called atmost once
+                for (auto &node : tp)  // this removes existance of this element in O(60) at max
+                    remove(node);
+            }
+        }
+        swap(q, tq);
     }
-    cout << ans << endl;
+    if (not visited[b])
+    {
+        cout << -1 << endl;
+        return;
+    }
+    vector<int> res = {b};
+    while (parent[res.back()] >= 0)
+    {
+        res.push_back(parent[res.back()]);
+    }
+    cout << res.size() << endl;
+    reverse(res.begin(), res.end());
+    for (auto &elm : res)
+        cout << elm + 1 << " ";
+    cout << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();

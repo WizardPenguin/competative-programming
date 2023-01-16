@@ -1,3 +1,9 @@
+// seems like binary search over solution is better solution
+// but how to check weather length l is valid solution or not
+// for that we are going to take every number < l and mark then as unuseful
+// after then using dp we are going to optimize searching of unuseful numbers in square area
+// this takes O(n*m) time at max
+
 #pragma GCC optimize("Ofast")
 #pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,fma")
 #pragma GCC optimize("unroll-loops")
@@ -79,76 +85,97 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+int n, m;
+vector<vector<int>> v;
+bool check(int l)
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
+    auto dp = v;
+    // debug(l);
+    // finding good and bad elements
+    for (auto &elm : dp)
     {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
+        for (auto &e : elm)
+        {
+            if (e >= l)
+                e = 0;
+            else
+                e = 1;
+        }
     }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
+    // debug(dp);
+    // creating dp for them
+    for (int i = 0; i < n; i += 1)
     {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
+        for (int j = 0; j < m; j += 1)
+        {
+            if (i)
+            {
+                dp[i][j] += dp[i - 1][j];
+            }
+            if (j)
+            {
+                dp[i][j] += dp[i][j - 1];
+            }
+            if (i and j)
+            {
+                dp[i][j] -= dp[i - 1][j - 1];
+            }
+        }
     }
-    debug(ans, zeroId, endingId);
-    return ans;
+    // check all possible squares of length l
+    for (int i = 0; i + l - 1 < n; i += 1)
+    {
+        for (int j = 0; j + l - 1 < m; j += 1)
+        {
+            int ans = dp[i + l - 1][j + l - 1];
+            if (i)
+            {
+                ans -= dp[i - 1][j + l - 1];
+            }
+            if (j)
+            {
+                ans -= dp[i + l - 1][j - 1];
+            }
+            if (i and j)
+            {
+                ans += dp[i - 1][j - 1];
+            }
+            if (not ans)
+                return true;
+        }
+    }
+    return false;
 }
 void solve()
 {
-    int n;
-    cin >> n;
-    vector<int> v(n);
+    cin >> n >> m;
+    // debug(n, m);
+    v = vector<vector<int>>(n, vector<int>(m, 0));
     for (auto &elm : v)
-        cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
     {
-        if (v[i] == 0)
+        for (auto &e : elm)
+            cin >> e;
+    }
+    int l = 1, r = min(n, m);
+    while (l < r)
+    {
+        int mid = (l + r + 1) / 2;
+        if (check(mid))
         {
-            zeroId.push_back(i);
+            // try to increase solution
+            l = mid;
+        }
+        else
+        {
+            r = mid - 1;
         }
     }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
-    int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
-    {
-        prev += v[i];
-        ans += (prev == 0);
-    }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
-    {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
-    }
-    cout << ans << endl;
+    cout << r << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
+    ll test;
     cin >> test;
     while (test--)
     {

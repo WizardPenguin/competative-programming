@@ -79,77 +79,62 @@ void _print(T t, V... v)
 #else
 #define debug(x...)
 #endif
-// this can be taken down to most frequent prefix sum in this range as solution
-int maxZeros(vector<int> &v, int zeroId, int endingId)
+bool checkAndMake(vll &v, int i, vi &elms)
 {
-    map<long long, int> mp;
-    vector<long long> prefsum(endingId - zeroId + 1, 0);
-    prefsum[0] = 0;
-    mp[0] += 1;
-    for (int i = zeroId + 1, id = 1; i <= endingId; i += 1, id += 1)
+    for (int x = i; x < elms.size(); x += 1)
     {
-        prefsum[id] += v[i] + prefsum[id - 1];
-        mp[prefsum[id]] += 1;
+        ll prevSum = v[x + 1] + elms[i];
+        if (prevSum < 0)
+            return false;
     }
-    int ans = mp[0];
-    for (int i = 1; i < prefsum.size(); i += 1)
+    // it's good to take this number so better take it
+    for (int x = i; x < elms.size(); x += 1)
     {
-        // making this index 0 by placing such number at zeroId
-        // then count is count of remainig zeros
-        long long prev = 0;
-        prev = prefsum[i];
-        ans = max(ans, mp[prev]);
-        mp[prefsum[i]]--; // remove this since not going to be considered in future
+        v[x + 1] += elms[i];
     }
-    debug(ans, zeroId, endingId);
-    return ans;
+    return true;
 }
 void solve()
 {
     int n;
     cin >> n;
-    vector<int> v(n);
+    vi v(n);
     for (auto &elm : v)
         cin >> elm;
-    // let's start from end
-    // for each 0 I can use it to make subarray = 0 toll any index after this
-    // last zero can make subarray zero after any index following it
-    // try making all possible states after that and find largest 0's it can forming doing so
-    // do this for all zeros seems resonably good
-    // they makes non intersecting queries
-    // since if previous zero has something remaining after it makes subarray sum = 0
-    // then next zero can use it to make 0 after some time, but this can be considered same case as next zero made it here
-    // so previous sum doesn't affect our current 0 in any way
-    vector<int> zeroId;
-    for (int i = 0; i < v.size(); i += 1)
-    {
-        if (v[i] == 0)
-        {
-            zeroId.push_back(i);
-        }
-    }
-    zeroId.push_back(n);
-    // taking some starting zero which are out of our control
+    vll pref(n + 1, 0);
+    map<int, vector<int>> negatives;
     int ans = 0;
-    long long prev = 0;
-    for (int i = 0; i < zeroId.front(); i += 1)
+    for (int i = 0; i < n; i++)
     {
-        prev += v[i];
-        ans += (prev == 0);
+        int take = 0;
+        if (v[i] >= 0)
+        {
+            take = v[i];
+            ans += 1;
+        }
+        else
+        {
+            negatives[v[i]].push_back(i);
+        }
+        pref[i + 1] += (pref[i] + take);
     }
-    debug(ans);
-    // taking optimal solution of subarray starting with zero
-    for (int i = 0; i < zeroId.size() - 1; i += 1)
+    // we have -ve numbers sorted by their values, smaller on first
+    // it's optimal to take that smallest -ve number first irrespective of it's position
+    // it will be taken only if its passes till last +ve number otherwise it'll decrease solution, better try other ones
+    for (auto it = negatives.rbegin(); it != negatives.rend(); it++)
     {
-        ans += maxZeros(v, zeroId[i], zeroId[i + 1] - 1);
+        auto &ids = it->second;
+        for (auto &id : ids)
+        {
+            ans += checkAndMake(pref, id, v);
+        }
     }
     cout << ans << endl;
 }
 int main()
 {
     fast_cin();
-    int test;
-    cin >> test;
+    ll test = 1;
     while (test--)
     {
         solve();
